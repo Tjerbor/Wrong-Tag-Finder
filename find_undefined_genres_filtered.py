@@ -10,13 +10,17 @@ from mutagen.wave import WAVE
 FILETYPES = set(['flac', 'm4a', 'mp3', 'ogg', 'wav'])
 GENRES = set(
     [genre.strip() for genre in
-     'Future House, Modern House, Dubstep, House, Progressive, Colour House'
+     'BPMCHANGE,Omnigenre,Acid House,Disco House,French House,Ghetto House,Jackin House,Melodic House,OS Future House,Progressive House,Soulful House,Speed House,'
+     ' Complextro,Disco,Electro Swing,Future Bounce,Future Funk,Hardcore,Hardstyle,Hoe Trappin,Jall,Jersey Club,Meme,Pop,Psytrance,Riddim,Tearout,Techno,Trance,Trap,Chillwave,Synthwave,'
+     'Bass House,Colour House,Deep House ,Future House,Modern House,Piano House,Lofi House,Tech House,Colour Bass,Dubstep ,Breakcore,DnBnB'
+     'Liquid DnB,Melodic DnB,Garage, Normie, Techcore'
      .split(',')]
 )
 GROUPING = 'For Mixing'
 
 
 def check_filetype(files):
+    global curse_height
     for filepath in files:
         grouping_field_exists_and_corrects = False
 
@@ -86,5 +90,6 @@ def check_filetype(files):
 if __name__ == '__main__':
 
     for filetype in FILETYPES:
+        print (f'Now Checking {filetype} files.')
         files = glob.glob(f'**/*.{filetype}', recursive=True)
         check_filetype(files)
