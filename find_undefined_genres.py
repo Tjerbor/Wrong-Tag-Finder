@@ -14,7 +14,6 @@ GENRES = set(
 )
 
 
-
 def check_filetype(files):
     for filepath in files:
 
@@ -37,12 +36,6 @@ def check_filetype(files):
             case _:
                 print(f'\033[93mUndefined filetype \"{filetype}\"\033[0m\n')
                 return
-
-        # try:
-        #     print(filepath)
-        #     print(audio.tags)
-        # except Exception:
-        #     pass
 
         if (genre_fieldname in audio.keys()):
             genre_fields = audio[genre_fieldname]
