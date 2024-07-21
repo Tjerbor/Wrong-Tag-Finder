@@ -2,9 +2,8 @@ import glob
 from pathlib import Path
 
 from colorama import just_fix_windows_console
-from mutagen.easyid3 import EasyID3
+from mutagen.easyid3 import EasyID3, EasyID3FileType
 from mutagen.flac import FLAC
-from mutagen.id3 import ID3
 from mutagen.mp4 import MP4
 from mutagen.oggvorbis import OggVorbis
 from mutagen.wave import WAVE
@@ -28,8 +27,9 @@ def get_project_root() -> Path:
     return Path(__file__).parent
 
 
-def check_filetype(files) -> list:
+def check_filetype(files, filetype) -> tuple:
     result = []
+    undefined_genres_summary_per_type = []
 
     match filetype:
         case 'flac':
@@ -51,11 +51,16 @@ def check_filetype(files) -> list:
             genre_fieldname = '©gen'
 
             def m4a_grouping_checker(mutagen_audio, mutagen_audio_filepath) -> bool:
-                grouping_fieldname = '----:com.apple.iTunes:GROUPING'
-                if grouping_fieldname in mutagen_audio.keys():
-                    grouping_raw = str(mutagen_audio['----:com.apple.iTunes:GROUPING'][0])
-                    grouping_refined = grouping_raw[2:len(grouping_raw) - 1]
-                    if grouping_refined == GROUPING:
+                grouping_fieldname_1 = '©grp'
+                grouping_fieldname_2 = '----:com.apple.iTunes:GROUPING'
+                if grouping_fieldname_1 in mutagen_audio.keys():
+                    grouping_refined_1 = str(mutagen_audio[grouping_fieldname_1][0])
+                    if grouping_refined_1 == GROUPING:
+                        return True
+                elif grouping_fieldname_2 in mutagen_audio.keys():
+                    grouping_raw_2 = str(mutagen_audio[grouping_fieldname_2][0])
+                    grouping_refined_2 = grouping_raw_2[2:len(grouping_raw_2) - 1]
+                    if grouping_refined_2 == GROUPING:
                         return True
 
             grouping_field_exists_and_correct = m4a_grouping_checker
@@ -65,9 +70,9 @@ def check_filetype(files) -> list:
             genre_fieldname = 'genre'
 
             def mp3_grouping_checker(mutagen_audio, mutagen_audio_filepath) -> bool:
-                grouping_fieldname = 'GRP1'
-                helper = ID3(mutagen_audio_filepath)
-                if grouping_fieldname in helper.keys() and helper[grouping_fieldname] == GROUPING:
+                grouping_fieldname = 'grouping'
+                helper = EasyID3FileType(mutagen_audio_filepath)
+                if grouping_fieldname in helper.keys() and str(helper[grouping_fieldname][0]) == GROUPING:
                     return True
 
             grouping_field_exists_and_correct = mp3_grouping_checker
@@ -77,9 +82,14 @@ def check_filetype(files) -> list:
             genre_fieldname = 'genre'
 
             def ogg_grouping_checker(mutagen_audio, mutagen_audio_filepath) -> bool:
-                grouping_fieldname = 'grouping'
-                if grouping_fieldname in mutagen_audio.keys():
-                    grouping_refined = str(mutagen_audio[grouping_fieldname][0])
+                grouping_fieldname_1 = 'grouping'
+                grouping_fieldname_2 = 'contentgroup'
+                if grouping_fieldname_1 in mutagen_audio.keys():
+                    grouping_refined = str(mutagen_audio[grouping_fieldname_1][0])
+                    if grouping_refined == GROUPING:
+                        return True
+                elif grouping_fieldname_2 in mutagen_audio.keys():
+                    grouping_refined = str(mutagen_audio[grouping_fieldname_2][0])
                     if grouping_refined == GROUPING:
                         return True
 
@@ -98,7 +108,7 @@ def check_filetype(files) -> list:
 
         case _:
             print(f'\033[93mUndefined filetype \"{filetype}\"\033[0m\n')
-            return result
+            return result, undefined_genres_summary_per_type
 
     for relative_filepath in files:
         try:
@@ -120,23 +130,34 @@ def check_filetype(files) -> list:
                     print(relative_filepath)
                     print(f'Undefined Genres:{undefined_genres}\n')
                     result.append(root_path + '\\' + relative_filepath)
+                    undefined_genres_summary_per_type.extend(undefined_genres)
         except Exception as e:
             print(f'{str(e)}\n')
 
-    return result
+    return result, undefined_genres_summary_per_type
 
 
 if __name__ == '__main__':
     just_fix_windows_console()
     root_path = str(get_project_root())
     m3u8 = []
+    undefined_genres_summary = set()
 
     for filetype in FILETYPES:
         print(f'\033[96mNow Checking {filetype} files.\033[0m')
         files = glob.glob(f'**/*.{filetype}', recursive=True)
-        m3u8.extend(check_filetype(files))
+        m3, undef = check_filetype(files, filetype)
+        m3u8.extend(m3)
+        undefined_genres_summary.update(undef)
 
     if len(m3u8) > 0:
         m3u8.sort()
-        with open('results.m3u8', 'w') as results:
+        with open('results.m3u8', 'w', encoding="utf-8") as results:
             results.write('\n'.join(m3u8))
+
+    if len(undefined_genres_summary) > 0:
+        undefined_genres_summary = sorted(undefined_genres_summary)
+        output = '\n'.join(undefined_genres_summary)
+        print(f'\033[4mUndefined genres summary:\033[0m\n\033[1;33m{output}\033[0m')
+        with open('results.txt', 'w', encoding="utf-16") as results:
+            results.write(output)

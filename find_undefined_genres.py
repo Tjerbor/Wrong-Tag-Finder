@@ -21,8 +21,9 @@ def get_project_root() -> Path:
     return Path(__file__).parent
 
 
-def check_filetype(files, filetype) -> list:
+def check_filetype(files, filetype) -> tuple:
     result = []
+    undefined_genres_summary_per_type = []
 
     match filetype:
         case ftype if ftype in ['aif', 'aiff']:
@@ -45,7 +46,7 @@ def check_filetype(files, filetype) -> list:
             genre_fieldname = 'TCON'
         case _:
             print(f'\033[93mUndefined filetype \"{filetype}\"\033[0m\n')
-            return result
+            return result, undefined_genres_summary_per_type
 
     for relative_filepath in files:
         try:
@@ -66,24 +67,36 @@ def check_filetype(files, filetype) -> list:
                     print(relative_filepath)
                     print(f'Undefined Genres:{undefined_genres}\n')
                     result.append(root_path + '\\' + relative_filepath)
+                    undefined_genres_summary_per_type.extend(undefined_genres)
 
         except Exception as e:
             print(f'{str(e)}\n')
 
-    return result
+    return result, undefined_genres_summary_per_type
 
 
 if __name__ == '__main__':
     just_fix_windows_console()
     root_path = str(get_project_root())
     m3u8 = []
+    undefined_genres_summary = set()
 
     for filetype in FILETYPES:
         print(f'\033[96mNow Checking {filetype} files.\033[0m')
         files = glob.glob(f'**/*.{filetype}', recursive=True)
-        m3u8.extend(check_filetype(files, filetype))
+        m3, undef = check_filetype(files, filetype)
+        m3u8.extend(m3)
+        undefined_genres_summary.update(undef)
 
     if len(m3u8) > 0:
         m3u8.sort()
-        with open('results.m3u8', 'w') as results:
+        with open('results.m3u8', 'w', encoding="utf-8") as results:
             results.write('\n'.join(m3u8))
+
+    if len(undefined_genres_summary) > 0:
+        undefined_genres_summary = sorted(undefined_genres_summary)
+        output = '\n'.join(undefined_genres_summary)
+        print(f'\033[4mUndefined genres summary:\033[0m\n\033[1;33m{output}\033[0m')
+        with open('results.txt', 'w', encoding="utf-16") as results:
+            results.write(output)
+
