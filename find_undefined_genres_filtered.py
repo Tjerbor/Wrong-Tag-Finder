@@ -17,7 +17,7 @@ GENRES = set(
      'Synthwave,Bass House,Colour House,Deep House ,Future House,Modern House,Piano House,Lofi House,Tech House,'
      'Colour Bass,Dubstep ,Breakcore,DnBnB,Liquid DnB,Melodic DnB,Garage, Normie, Techcore,Drumstep,Melodic Dubstep,'
      'Brazilian Bass,undef,Tribal House,City Pop,Cyberneuro, Neurobass,Anime,Electro,Nightcore,Multigenre,'
-     'Colour Trance,Colour DnBnB,Hi-TECH,Rap/Hip Hop,Organ House,Jungle'
+     'Colour Trance,Colour DnBnB,Hi-TECH,Rap/Hip Hop,Organ House,Jungle,Breakswap'
      .replace('\r', '').replace('\n', '').split(',')]
 )
 GROUPING = 'For Mixing'

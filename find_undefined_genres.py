@@ -12,7 +12,7 @@ from mutagen.wave import WAVE
 FILETYPES = sorted({'aif', 'aiff', 'flac', 'm4a', 'mp3', 'ogg', 'wav'})
 GENRES = set(
     [genre.strip() for genre in
-     'Future House, Modern House, Dubstep, House, Progressive, Colour House'
+     ''
      .replace('\r', '').replace('\n', '').split(',')]
 )
 
