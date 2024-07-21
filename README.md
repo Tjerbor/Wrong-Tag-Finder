@@ -26,6 +26,7 @@ All unidentified genres are printed into a txt file alphabetically.
 
 ## Usage
 1. Put ```find_undefined_genres.py``` in the root folder of the folder structure you want to scan.
-2. Open ```find_undefined_genres.py``` in a text editor and navigate to line 15.
-3. Between the single quotes list all the genres you want to exclude in the search, separate them by comma and save the changes. <br/> Example: ```'Deep House, Techo, Drum & Bass'```
-2. Then execute the script with ```python find_undefined_genres.py```.
+2. Open ```find_undefined_genres.py``` in a text editor.
+3. Navigate to line 12, add/remove the desired file types you want to scan, and save the changes.
+4. Navigate to line 15, list all the genres you want to exclude in the search between the two single quotes, separate them by comma, and save the changes. <br/> Example: ```'Deep House, Techo, Drum & Bass'```
+5. Then execute the script with ```python find_undefined_genres.py```.
