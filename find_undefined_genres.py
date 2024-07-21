@@ -99,4 +99,3 @@ if __name__ == '__main__':
         print(f'\033[4mUndefined genres summary:\033[0m\n\033[1;33m{output}\033[0m')
         with open('results.txt', 'w', encoding="utf-16") as results:
             results.write(output)
-
