@@ -14,16 +14,16 @@ GENRES = set(
      'BPMCHANGE,Omnigenre,Acid House,Disco House,French House,Ghetto House,Jackin House,Melodic House,OS Future House,Progressive House,Soulful House,Speed House,'
      ' Complextro,Disco,Electro Swing,Future Bounce,Future Funk,Hardcore,Hardstyle,Hoe Trappin,Jall,Jersey Club,Meme,Pop,Psytrance,Riddim,Tearout,Techno,Trance,Trap,Chillwave,Synthwave,'
      'Bass House,Colour House,Deep House ,Future House,Modern House,Piano House,Lofi House,Tech House,Colour Bass,Dubstep ,Breakcore,DnBnB,'
-     'Liquid DnB,Melodic DnB,Garage, Normie, Techcore'
+     'Liquid DnB,Melodic DnB,Garage, Normie, Techcore,Drumstep,Melodic Dubstep,Brazilian Bass,undef,Tribal House,City Pop,Cyberneuro, Neurobass,Anime,Electro,Nightcore,Multigenre'
+     'Colour Trance,Colour DnBnB,Hi-TECH,Rap/Hip Hop,Organ House,Jungle'
      .replace('\r', '').replace('\n', '').split(',')]
 )
 GROUPING = 'For Mixing'
 
 
 def check_filetype(files):
-    global curse_height
     for filepath in files:
-        grouping_field_exists_and_corrects = False
+        grouping_field_exists_and_correct = False
 
         try:
             match filetype:
@@ -36,7 +36,7 @@ def check_filetype(files):
                     if (grouping_key_name in audio.keys()):
                         grouping_refined = str(audio[grouping_tag_fieldname][0])
                         if (grouping_refined == GROUPING):
-                            grouping_field_exists_and_corrects = True
+                            grouping_field_exists_and_correct = True
                 case 'm4a':
                     audio = MP4(filepath)
                     genre_fieldname = '©gen'
@@ -46,14 +46,14 @@ def check_filetype(files):
                         grouping_refined = grouping_raw[2:len(grouping_raw) - 1]
 
                         if (grouping_refined == GROUPING):
-                            grouping_field_exists_and_corrects = True
+                            grouping_field_exists_and_correct = True
                 case 'mp3':
                     audio = EasyID3(filepath)
                     genre_fieldname = 'genre'
                     grouping_fieldname = 'GRP1'
                     helper = ID3(filepath)
                     if (grouping_fieldname in helper.keys() and helper[grouping_fieldname] == GROUPING):
-                        grouping_field_exists_and_corrects = True
+                        grouping_field_exists_and_correct = True
                 case 'ogg':
                     audio = OggVorbis(filepath)
                     genre_fieldname = 'genre'
@@ -61,18 +61,18 @@ def check_filetype(files):
                     if (grouping_fieldname in audio.keys()):
                         grouping_refined = str(audio[grouping_fieldname][0])
                         if (grouping_refined == GROUPING):
-                            grouping_field_exists_and_corrects = True
+                            grouping_field_exists_and_correct = True
                 case 'wav':
                     audio = WAVE(filepath)
                     genre_fieldname = 'TCON'
                     grouping_fieldname = 'GRP1'
                     if (grouping_fieldname in audio.keys() and audio[grouping_fieldname] == GROUPING):
-                        grouping_field_exists_and_corrects = True
+                        grouping_field_exists_and_correct = True
                 case _:
                     print(f'\033[93mUndefined filetype \"{filetype}\"\033[0m\n')
                     return
 
-            if (genre_fieldname in audio.keys() and grouping_field_exists_and_corrects):
+            if (genre_fieldname in audio.keys() and grouping_field_exists_and_correct):
                 genre_fields = audio[genre_fieldname]
 
                 # join duplicate fields (Will not work with m4a files)
