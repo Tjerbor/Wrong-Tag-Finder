@@ -21,33 +21,33 @@ def get_project_root() -> Path:
     return Path(__file__).parent
 
 
-def check_filetype(files) -> list:
+def check_filetype(files, filetype) -> list:
     result = []
 
-    for relative_filepath in files:
-        match filetype:
-            case ftype if ftype in ['aif', 'aiff']:
-                mutagen_type = AIFF
-                genre_fieldname = 'TCON'
-            case 'flac':
-                mutagen_type = FLAC
-                genre_fieldname = 'genre'
-            case 'm4a':
-                mutagen_type = MP4
-                genre_fieldname = '©gen'
-            case 'mp3':
-                mutagen_type = EasyID3
-                genre_fieldname = 'genre'
-            case 'ogg':
-                mutagen_type = OggVorbis
-                genre_fieldname = 'genre'
-            case 'wav':
-                mutagen_type = WAVE
-                genre_fieldname = 'TCON'
-            case _:
-                print(f'\033[93mUndefined filetype \"{filetype}\"\033[0m\n')
-                return result
+    match filetype:
+        case ftype if ftype in ['aif', 'aiff']:
+            mutagen_type = AIFF
+            genre_fieldname = 'TCON'
+        case 'flac':
+            mutagen_type = FLAC
+            genre_fieldname = 'genre'
+        case 'm4a':
+            mutagen_type = MP4
+            genre_fieldname = '©gen'
+        case 'mp3':
+            mutagen_type = EasyID3
+            genre_fieldname = 'genre'
+        case 'ogg':
+            mutagen_type = OggVorbis
+            genre_fieldname = 'genre'
+        case 'wav':
+            mutagen_type = WAVE
+            genre_fieldname = 'TCON'
+        case _:
+            print(f'\033[93mUndefined filetype \"{filetype}\"\033[0m\n')
+            return result
 
+    for relative_filepath in files:
         try:
             audio = mutagen_type(relative_filepath)
 
@@ -81,7 +81,7 @@ if __name__ == '__main__':
     for filetype in FILETYPES:
         print(f'\033[96mNow Checking {filetype} files.\033[0m')
         files = glob.glob(f'**/*.{filetype}', recursive=True)
-        m3u8.extend(check_filetype(files))
+        m3u8.extend(check_filetype(files, filetype))
 
     if len(m3u8) > 0:
         m3u8.sort()
