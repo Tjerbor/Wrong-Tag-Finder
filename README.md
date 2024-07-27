@@ -29,4 +29,4 @@ All unidentified genres are printed into a txt file alphabetically.
 2. Open ```find_undefined_genres.py``` in a text editor.
 3. Navigate to line 12, add/remove the desired file types you want to scan, and save the changes.
 4. Navigate to line 15, list all the genres you want to exclude in the search between the two single quotes, separate them by comma, and save the changes. <br/> Example: ```'Deep House, Techo, Drum & Bass'```
-5. Then execute the script with ```python find_undefined_genres.py```.
+5. Then execute the script with the command ```python find_undefined_genres.py```.
